@@ -1,4 +1,4 @@
 package com.lawrencekaul.pong;
 
-class bat {
+abstract class Bat {
 }
