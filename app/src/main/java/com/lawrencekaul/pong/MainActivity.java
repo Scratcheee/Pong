@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         //More code here later in the chapter
+        mPongGame.resume();
     }
 
     @Override
@@ -36,5 +37,10 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
 
         //More code here later in the chapter
+        mPongGame.pause();
+
+
     }
+
+
 }
