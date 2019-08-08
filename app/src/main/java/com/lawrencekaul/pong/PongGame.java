@@ -123,6 +123,8 @@ class PongGame extends SurfaceView implements Runnable {
 
             descriptor = assetManager.openFd("miss.wav");
             mMissID = mSP.load(descriptor, 0);
+        }catch (IOException e) {
+            Log.d("error", "failed to load sound files");
         }
 
         // Everything is ready so start the game
@@ -227,20 +229,20 @@ class PongGame extends SurfaceView implements Runnable {
 
         // Top
 
-        if (mBall.getRect().top < 0){
+        // Top
+        if(mBall.getRect().top < 0){
             mBall.reverseYVelocity();
             mSP.play(mBoopID, 1, 1, 0, 0, 1);
         }
-
-        // Left
-        if (mBall.getRect().left < 0){
+// Left
+        if(mBall.getRect().left < 0){
             mBall.reverseXVelocity();
             mSP.play(mBopID, 1, 1, 0, 0, 1);
         }
 
 
         // Right
-        if (mBall.getRect().right < 0){
+        if(mBall.getRect().right > mScreenX){
             mBall.reverseXVelocity();
             mSP.play(mBopID, 1, 1, 0, 0, 1);
         }
