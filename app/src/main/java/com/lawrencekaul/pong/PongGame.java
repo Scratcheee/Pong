@@ -1,13 +1,22 @@
 package com.lawrencekaul.pong;
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.SoundPool;
+import android.os.Build;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import java.io.IOException;
 
 class PongGame extends SurfaceView implements Runnable {
 
@@ -40,6 +49,14 @@ class PongGame extends SurfaceView implements Runnable {
     private volatile boolean mPlaying;
     private boolean mPaused = true;
 
+    // All these are for playing sounds
+    private SoundPool mSP;
+    private int mBeepID = -1;
+    private int mBoopID = -1;
+    private int mBopID = -1;
+    private int mMissID = -1;
+
+
     // The PongGame constructor
     // Called when this line:
     // mPongGame = new PongGame (this, size.x, size.y);
@@ -70,10 +87,50 @@ class PongGame extends SurfaceView implements Runnable {
         mBall = new Ball(mScreenX);
         mBat = new Bat (mScreenX, mScreenY);
 
+        // Prepare the SoundPool instance depending on the version of Android
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            AudioAttributes audioAttributes =
+                    new AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_MEDIA)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                            .build();
+            mSP = new SoundPool.Builder()
+                    .setMaxStreams(5)
+                    .setAudioAttributes(audioAttributes)
+                    .build();
+        } else {
+            mSP = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
+        }
+
+        /*
+        Open each of the sound files in turn
+        and load them into RAM ready to play
+        The try-catch blocks handle when this fails
+        and is required.
+         */
+        try{
+            AssetManager assetManager = context.getAssets();
+            AssetFileDescriptor descriptor;
+
+            descriptor = assetManager.openFd("beep.wav");
+            mBeepID = mSP.load(descriptor, 0);
+
+            descriptor = assetManager.openFd("boop.wav");
+            mBoopID = mSP.load(descriptor, 0);
+
+            descriptor = assetManager.openFd("bop.wav");
+            mBopID = mSP.load(descriptor, 0);
+
+            descriptor = assetManager.openFd("miss.wav");
+            mMissID = mSP.load(descriptor, 0);
+        }
+
         // Everything is ready so start the game
         startNewGame();
 
     }
+
+
 
     // The player has just lost
     // ir is starting their first game
@@ -145,15 +202,48 @@ class PongGame extends SurfaceView implements Runnable {
     private void detectCollisions() {
         // Has the bat hit the ball?
 
+        if(RectF.intersects(mBat.getRect(), mBall.getRect())) {
+            // Realistic-ish bounce
+            mBall.batBounce(mBat.getRect());
+            mBall.increaseVelocity();
+            mScore++;
+            mSP.play(mBeepID, 1, 1, 0, 0, 1);
+        }
+
         //Has the ball hit the edge of the screen
 
         // Bottom
+        if (mBall.getRect().bottom > mScreenY) {
+            mBall.reverseYVelocity();
+
+            mLives--;
+            mSP.play(mMissID, 1, 1, 0, 0, 1);
+
+            if(mLives == 0) {
+                mPaused = true;
+                startNewGame();
+            }
+        }
 
         // Top
 
+        if (mBall.getRect().top < 0){
+            mBall.reverseYVelocity();
+            mSP.play(mBoopID, 1, 1, 0, 0, 1);
+        }
+
         // Left
+        if (mBall.getRect().left < 0){
+            mBall.reverseXVelocity();
+            mSP.play(mBopID, 1, 1, 0, 0, 1);
+        }
+
 
         // Right
+        if (mBall.getRect().right < 0){
+            mBall.reverseXVelocity();
+            mSP.play(mBopID, 1, 1, 0, 0, 1);
+        }
     }
 
     // This method is called by PongActivity
