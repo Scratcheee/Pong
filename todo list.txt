@@ -1,0 +1,7 @@
+fix right wall collision
+randomize ball starting direction
+Make high score last between new games?
+Why is ball getting locked in X or Y direction
+
+
+

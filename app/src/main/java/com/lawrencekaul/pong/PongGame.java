@@ -21,7 +21,7 @@ import java.io.IOException;
 class PongGame extends SurfaceView implements Runnable {
 
     // Are we debugging?
-    private final boolean DEBUGGING = true;
+    private final boolean DEBUGGING = false;
     // These objects are needed to do the drawing
     private SurfaceHolder mOurHolder;
     private Canvas mCanvas;
@@ -40,7 +40,8 @@ class PongGame extends SurfaceView implements Runnable {
     private Bat mBat;
     private Ball mBall;
     // The current score and lives remaining
-    private int mScore;
+    private int mHighScore;
+    private int mCurrentScore;
     private int mLives;
     // Here is the Thread and the two control variables
     private Thread mGameThread = null;
@@ -73,7 +74,7 @@ class PongGame extends SurfaceView implements Runnable {
         mScreenY = y;
 
         // Font is 5% of the screen width
-        mFontSize = mScreenX / 20;
+        mFontSize = mScreenX / 30;
         // Margin is 1.5% of the screen width
         mFontMargin = mScreenX / 75;
 
@@ -135,15 +136,26 @@ class PongGame extends SurfaceView implements Runnable {
 
 
     // The player has just lost
-    // ir is starting their first game
+    // or is starting their first game
     private void startNewGame() {
 
         // Put the ball back into the starting position
         mBall.reset(mScreenX, mScreenY);
 
         // Reset the score and the player's chances
-        mScore = 0;
+        mHighScore = 0;
+        mCurrentScore = 0;
         mLives = 3;
+
+    }
+
+    private void resetBall() {
+
+        // Put the ball back into the starting position
+        mBall.reset(mScreenX, mScreenY);
+
+        // Reset the score and the player's chances
+        mCurrentScore = 0;
 
     }
 
@@ -208,7 +220,7 @@ class PongGame extends SurfaceView implements Runnable {
             // Realistic-ish bounce
             mBall.batBounce(mBat.getRect());
             mBall.increaseVelocity();
-            mScore++;
+            mCurrentScore++;
             mSP.play(mBeepID, 1, 1, 0, 0, 1);
         }
 
@@ -218,7 +230,13 @@ class PongGame extends SurfaceView implements Runnable {
         if (mBall.getRect().bottom > mScreenY) {
             mBall.reverseYVelocity();
 
+
+            if (mCurrentScore > mHighScore) {
+                mHighScore = mCurrentScore;
+            }
             mLives--;
+            mPaused = true;
+            resetBall();
             mSP.play(mMissID, 1, 1, 0, 0, 1);
 
             if(mLives == 0) {
@@ -281,7 +299,7 @@ class PongGame extends SurfaceView implements Runnable {
             mCanvas = mOurHolder.lockCanvas();
 
             // Fill the screen with a solid color
-            mCanvas.drawColor(Color.argb(255, 26, 128, 182));
+            mCanvas.drawColor(Color.argb(255, 0, 0, 0));
 
             // Choose a color to paint with
             mPaint.setColor(Color.argb(255, 255, 255, 255));
@@ -294,7 +312,9 @@ class PongGame extends SurfaceView implements Runnable {
             mPaint.setTextSize(mFontSize);
 
             // Draw the HUD
-            mCanvas.drawText("Score: " + mScore + " Lives: " + mLives, mFontMargin, mFontSize, mPaint);
+            mCanvas.drawText("Current Score: " + mCurrentScore, mFontMargin, mFontSize, mPaint);
+            mCanvas.drawText("High Score: " + mHighScore, mFontMargin, mFontSize * 2, mPaint);
+            mCanvas.drawText("Lives Left: " + mLives, mFontMargin, mFontSize * 3, mPaint);
 
             if (DEBUGGING) {
                 printDebuggingText();
@@ -310,7 +330,7 @@ class PongGame extends SurfaceView implements Runnable {
         int debugSize = mFontSize / 2;
         int debugStart = 150;
         mPaint.setTextSize(debugSize);
-        mCanvas.drawText("FPS: " + mFPS, 10, debugStart, mPaint);
+        mCanvas.drawText("FPS: " + mFPS, 10, debugStart + debugSize, mPaint);
 
     }
 
