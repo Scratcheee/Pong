@@ -20,6 +20,9 @@ import java.io.IOException;
 
 class PongGame extends SurfaceView implements Runnable {
 
+
+    //Todo: Make high score last between games
+
     // Are we debugging?
     private final boolean DEBUGGING = false;
     // These objects are needed to do the drawing

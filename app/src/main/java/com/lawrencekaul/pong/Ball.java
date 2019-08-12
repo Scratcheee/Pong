@@ -2,7 +2,12 @@ package com.lawrencekaul.pong;
 
 import android.graphics.RectF;
 
+import java.util.Random;
+
 class Ball {
+
+
+    //Todo: Randomize dividing factor of mXVelocity = -(y / 10);
 
     /*
     These are the member variables (fields) they all
@@ -56,6 +61,20 @@ class Ball {
         mRect.bottom = mRect.top + mBallHeight;
     }
 
+    private Boolean randomizePositivity(){
+
+        Random rand = new Random();
+
+        int randInt = rand.nextInt(10);
+
+        if (randInt <=5){
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
     // Reverse the vertical direction of travel
     void reverseYVelocity() {
         mYVelocity = -mYVelocity;
@@ -67,6 +86,8 @@ class Ball {
     }
 
     void reset(int x, int y) {
+
+
         // Initialize the four points of the rectangle which defines the ball
         mRect.left = x / 2;
         mRect.top = 0;
@@ -79,8 +100,13 @@ class Ball {
         You could even increase it as the game progresses
         to make it harder
          */
-        mYVelocity = -(y / 3);
-        mXVelocity = (y / 3);
+        mYVelocity = (y / 3);
+
+        if (randomizePositivity()) {
+            mXVelocity = -(y / 10);
+        } else {
+            mXVelocity = (y / 10);
+        }
     }
 
     void increaseVelocity() {
