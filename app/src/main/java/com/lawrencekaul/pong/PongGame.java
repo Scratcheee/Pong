@@ -333,7 +333,7 @@ class PongGame extends SurfaceView implements Runnable {
         int debugSize = mFontSize / 2;
         int debugStart = 150;
         mPaint.setTextSize(debugSize);
-        mCanvas.drawText("FPS: " + mFPS, 10, debugStart + debugSize, mPaint);
+        //mCanvas.drawText("FPS: " + mFPS, 10, debugStart + debugSize, mPaint);
 
     }
 

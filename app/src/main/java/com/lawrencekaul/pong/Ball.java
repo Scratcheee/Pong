@@ -7,7 +7,7 @@ import java.util.Random;
 class Ball {
 
 
-    //Todo: Randomize dividing factor of mXVelocity = -(y / 10);
+    
 
     /*
     These are the member variables (fields) they all
@@ -61,18 +61,24 @@ class Ball {
         mRect.bottom = mRect.top + mBallHeight;
     }
 
+
+    // Create random int to decide whether ball starts moving right or left
     private Boolean randomizePositivity(){
 
         Random rand = new Random();
 
         int randInt = rand.nextInt(10);
 
-        if (randInt <=5){
-            return true;
-        } else {
-            return false;
-        }
+        return (randInt <= 5);
 
+    }
+
+    // Create random int to set angle of starting movement of ball
+    private int randomAngle(){
+        Random rand = new Random();
+        int randInt = rand.nextInt(10);
+        randInt++;
+        return randInt;
     }
 
     // Reverse the vertical direction of travel
@@ -103,9 +109,9 @@ class Ball {
         mYVelocity = (y / 3);
 
         if (randomizePositivity()) {
-            mXVelocity = -(y / 10);
+            mXVelocity = -(y / randomAngle());
         } else {
-            mXVelocity = (y / 10);
+            mXVelocity = (y / randomAngle());
         }
     }
 
