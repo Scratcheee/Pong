@@ -1,6 +1,7 @@
 package com.lawrencekaul.pong;
 
 import android.graphics.RectF;
+import java.security.SecureRandom;
 
 import java.util.Random;
 
@@ -65,7 +66,7 @@ class Ball {
     // Create random int to decide whether ball starts moving right or left
     private Boolean randomizePositivity(){
 
-        Random rand = new Random();
+        Random rand = new SecureRandom();
 
         int randInt = rand.nextInt(10);
 
@@ -75,7 +76,7 @@ class Ball {
 
     // Create random int to set angle of starting movement of ball
     private int randomAngle(){
-        Random rand = new Random();
+        Random rand = new SecureRandom();
         int randInt = rand.nextInt(10);
         randInt++;
         return randInt;
